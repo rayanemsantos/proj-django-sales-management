@@ -30,7 +30,7 @@ class Sale(models.Model):
 
 
 class SaleProduct(models.Model):
-    ''' Classe que representa a agenda de comissão de um produto '''
+    ''' Classe que representa o produto de uma venda '''
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=False)
     sale = models.ForeignKey(Sale, on_delete=models.CASCADE, null=False)
     quantity = models.PositiveIntegerField(
