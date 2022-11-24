@@ -2,13 +2,16 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from rest_framework import routers
+from seller import urls as seller_routes
 
 if settings.DEBUG:
     router = routers.DefaultRouter()
 else:
     router = routers.SimpleRouter()
 
-routeLists = []
+routeLists = [
+    seller_routes.routeList
+]
 
 for routeList in routeLists:
     for route in routeList:
