@@ -17,7 +17,7 @@ class Sale(models.Model):
         "Data de registro", editable=False)
 
     def __str__(self):
-        return '# {}'.format(str(self.pk))
+        return '# {}'.format(str(self.id))
 
     def save(self, *args, **kwargs):
         if not self.register_datetime:
