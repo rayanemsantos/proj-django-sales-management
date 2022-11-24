@@ -13,8 +13,7 @@ class Sale(models.Model):
         Customer, on_delete=models.SET_NULL, blank=True, null=True)
     seller = models.ForeignKey(
         Seller, on_delete=models.SET_NULL, blank=True, null=True)
-    register_datetime = models.DateTimeField(
-        "Data de registro", editable=False)
+    register_datetime = models.DateTimeField("Data de registro", null=False)
 
     def __str__(self):
         return '# {}'.format(str(self.id))
