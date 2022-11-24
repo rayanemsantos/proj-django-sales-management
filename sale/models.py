@@ -15,7 +15,8 @@ class Sale(models.Model):
         Customer, on_delete=models.SET_NULL, blank=True, null=True)
     seller = models.ForeignKey(
         Seller, on_delete=models.SET_NULL, blank=True, null=True)
-    register_datetime = models.DateTimeField("Data de registro", null=False)
+    register_datetime = models.DateTimeField(
+        "Data de registro", blank=True, null=True)
     total = models.DecimalField(
         "Total", max_digits=16, decimal_places=2, default=0)
 
