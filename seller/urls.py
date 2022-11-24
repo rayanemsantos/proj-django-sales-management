@@ -1,6 +1,6 @@
 from .views import SellerViewSet
 
-app_name = "selelr"
+app_name = "seller"
 
 routeList = (
     (r'seller', SellerViewSet),
