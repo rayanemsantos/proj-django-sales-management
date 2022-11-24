@@ -4,6 +4,7 @@ from sale.models import Sale, SaleProduct
 
 class SaleProductInline(admin.StackedInline):
     model = SaleProduct
+    readonly_fields = ('_commission_applied', )
     extra = 1
 
 
