@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from django.db.models.signals import post_save
-from django.db.models import Q
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
 from product.models import Product
@@ -39,6 +38,13 @@ class Sale(models.Model):
         for item in self.saleproduct_set.all():
             total += item.total
         self.total = total
+
+    @property
+    def total_commission(self):
+        total = 0
+        for item in self.saleproduct_set.all():
+            total += item.total_commission
+        return total
 
 
 class SaleProduct(models.Model):
@@ -91,6 +97,10 @@ class SaleProduct(models.Model):
                 self.commission_applied = commission_schedule.min_percentage
             if percentage > commission_schedule.max_percentage:
                 self.commission_applied = commission_schedule.max_percentage
+
+    @property
+    def total_commission(self):
+        return self.total * (self.commission_applied/100)
 
     def set_total(self):
         self.total = self.product.unit_price * self.quantity
