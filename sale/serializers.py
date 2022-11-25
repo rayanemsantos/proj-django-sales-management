@@ -1,9 +1,18 @@
 from rest_framework import serializers
 from rest_framework.serializers import as_serializer_error
-from sale.models import Sale
+from sale.models import Sale, SaleProduct
+
+
+class SaleProductSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SaleProduct
+        fields = '__all__'
 
 
 class SaleSerializer(serializers.ModelSerializer):
+    sale_products = SaleProductSerializer(
+        source="saleproduct_set", many=True, read_only=True)
 
     class Meta:
         model = Sale
@@ -42,8 +51,8 @@ class SaleSerializer(serializers.ModelSerializer):
                     product_id=_product['product'],
                     quantity=int(_product['quantity'])
                 )
-            except Exception:
-                pass
+            except Exception as e:
+                raise ValueError(str(e))
         return sale
 
     def update(self, sale, validated_data):

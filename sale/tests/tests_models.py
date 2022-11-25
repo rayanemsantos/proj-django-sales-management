@@ -3,11 +3,19 @@ from sale.models import Sale, SaleProduct
 from product.models import Product
 from customer.models import Customer
 from seller.models import Seller
+
 from product.tests.tests_models import SetupData as ProductSetupData
+from seller.tests.tests_models import SetupData as SellerSetup
+from customer.tests.tests_models import SetupData as CustomerSetup
 
 
 class SetupData:
     def create_sale(self):
+        self.seller_setup = SellerSetup()
+        self.customer_setup = CustomerSetup()
+        self.seller_setup.create_seller()
+        self.customer_setup.create_customer()
+
         self.sale = Sale.objects.create(
             access_key='35210822910629000101550090004001241944828631',
             seller=Seller.objects.first(),
