@@ -63,7 +63,7 @@ class SaleProduct(models.Model):
         "Total", max_digits=16, decimal_places=2, default=0)
 
     def __str__(self):
-        return "{} x {}".format(self.product.description, self.id)
+        return "{} x {}".format(self.product.description, self.quantity)
 
     def save(self, *args, **kwargs):
         self.set_total()
