@@ -38,19 +38,24 @@ class ProductCommissionSchedule(models.Model):
     day_week = models.PositiveIntegerField(
         "Dia da semana", choices=DAY_WEEK_CHOICES, null=False)
     min_percentage = models.DecimalField(
-        "Porcentagem mínima", max_digits=3, decimal_places=1, blank=True, null=True, validators=[validate_commission_percentage])
+        "Porcentagem mínima", max_digits=3, decimal_places=1, default=0, validators=[validate_commission_percentage])
     max_percentage = models.DecimalField(
-        "Porcentagem máxima", max_digits=3, decimal_places=1, blank=True, null=True, validators=[validate_commission_percentage])
+        "Porcentagem máxima", max_digits=3, decimal_places=1, default=10, null=True, validators=[validate_commission_percentage])
 
     def __str__(self):
         return "{} - {}".format(self.get_day_week_display(), self.product.description)
 
     def save(self, *args, **kwargs):
+        if self.min_percentage > self.max_percentage:
+            self.min_percentage = self.max_percentage
+        if self.max_percentage < self.min_percentage:
+            self.max_percentage = self.min_percentage
         return super(ProductCommissionSchedule, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'agenda de comissão do produto'
         verbose_name_plural = 'agendas de comissão dos produtos'
+        unique_together = ('day_week', 'product',)
 
     def get_day_week_display(self):
         for code, label in DAY_WEEK_CHOICES:
