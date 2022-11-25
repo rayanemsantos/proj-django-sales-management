@@ -51,6 +51,7 @@ class ProductCommissionSchedule(models.Model):
     class Meta:
         verbose_name = 'agenda de comissão do produto'
         verbose_name_plural = 'agendas de comissão dos produtos'
+        unique_together = ('day_week', 'product',)
 
     def get_day_week_display(self):
         for code, label in DAY_WEEK_CHOICES:
