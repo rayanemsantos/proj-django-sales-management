@@ -1,4 +1,5 @@
 import json
+import datetime
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -25,17 +26,17 @@ class SaleViewSetTestCase(TestCase):
 
     def test_list(self):
         response = self.client.get(self.base_route, follow=True)
-        content = json.loads(response.content.decode("utf-8"))
+        data = response.json()
         self.assertTrue(status.is_success(response.status_code))
-        self.assertTrue("id" in content[0])
+        self.assertTrue(type(data) == list)
 
     def test_get_object(self):
         sale = Sale.objects.first()
         response = self.client.get(
             self.base_route + '/' + str(sale.id), follow=True)
-        content = json.loads(response.content.decode("utf-8"))
+        data = response.json()
         self.assertTrue(status.is_success(response.status_code))
-        self.assertTrue("id" in content)
+        self.assertTrue(type(data) == dict)
 
     def test_post(self):
         payload = {
@@ -90,3 +91,32 @@ class SaleViewSetTestCase(TestCase):
         response = self.client.delete(
             self.base_route + '/' + str(sale.id) + '/')
         self.assertTrue(status.is_success(response.status_code))
+
+
+class SaleCommissionsViewSetCase(TestCase):
+
+    def setUp(self):
+        self.sale_setup = SaleSetup()
+
+        self.sale_setup.create_sale()
+        self.sale_setup.create_sale_product()
+
+        self.client = APIClient()
+
+        self.base_route = '/api/sale_commissions'
+
+    def test_list(self):
+        today = datetime.datetime.today()
+        day_init = today.replace(hour=0, minute=0, second=0)
+        day_end = today.replace(hour=23, minute=59, second=59)
+        init_format = day_init.strftime('%Y-%m-%d')
+        end_format = day_end.strftime('%Y-%m-%d')
+
+        query = '/?date_init=' + init_format + '&' + 'date_end=' + end_format
+        response = self.client.get(self.base_route + query, follow=True)
+        data = response.json()
+
+        self.assertTrue(status.is_success(response.status_code))
+        self.assertTrue("results" in data)
+        self.assertTrue(type(data["results"]) == list)
+        self.assertTrue("total" in data)

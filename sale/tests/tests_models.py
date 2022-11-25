@@ -22,6 +22,12 @@ class SetupData:
             customer=Customer.objects.first(),
         )
 
+        self.sale = Sale.objects.create(
+            access_key='35210822910629000101550090004001241944828331',
+            seller=Seller.objects.first(),
+            customer=Customer.objects.first()
+        )
+
     def create_sale_product(self):
         product_setup = ProductSetupData()
         product_setup.create_product()
