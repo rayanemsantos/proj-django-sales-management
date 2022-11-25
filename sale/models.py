@@ -1,7 +1,9 @@
 from django.db import models
 from django.utils import timezone
 from django.db.models.signals import post_save
+from django.db.models import Q
 from django.dispatch import receiver
+from django.core.exceptions import ObjectDoesNotExist
 from product.models import Product
 from customer.models import Customer
 from seller.models import Seller
@@ -55,9 +57,8 @@ class SaleProduct(models.Model):
 
     def save(self, *args, **kwargs):
         self.set_total()
+        self.set_commission_applied()
 
-        if not self.commission_applied:
-            self.set_commission_applied()
         return super(SaleProduct, self).save(*args, **kwargs)
 
     class Meta:
@@ -73,8 +74,23 @@ class SaleProduct(models.Model):
         self._commission_applied = value
 
     def set_commission_applied(self):
-        # set_commission_applied
-        pass
+        day_week = self.sale.register_datetime.weekday() + 1
+        percentage = self.product.commission_percentage
+
+        try:
+            commission_schedule = self.product.productcommissionschedule_set.get(
+                day_week=day_week)
+        except ObjectDoesNotExist:
+            commission_schedule = None
+            self.commission_applied = percentage
+
+        if commission_schedule:
+            if percentage >= commission_schedule.min_percentage and percentage <= commission_schedule.max_percentage:
+                self.commission_applied = percentage
+            if percentage < commission_schedule.min_percentage:
+                self.commission_applied = commission_schedule.min_percentage
+            if percentage > commission_schedule.max_percentage:
+                self.commission_applied = commission_schedule.max_percentage
 
     def set_total(self):
         self.total = self.product.unit_price * self.quantity
