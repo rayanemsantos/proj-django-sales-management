@@ -21,7 +21,10 @@ routeLists = [
 
 for routeList in routeLists:
     for route in routeList:
-        router.register(route[0], route[1])
+        try:
+            router.register(route[0], route[1], route[2])
+        except:
+            router.register(route[0], route[1])
 
 urlpatterns = [
     path('admin/', admin.site.urls),
