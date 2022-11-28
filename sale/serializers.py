@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import as_serializer_error
 from sale.models import Sale, SaleProduct
+from product.serializers import ProductSerializer
 
 
 class SaleProductSerializer(serializers.ModelSerializer):
@@ -8,6 +9,13 @@ class SaleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = SaleProduct
         fields = '__all__'
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['product'] = '' if instance.product == "" or instance.product == None else ProductSerializer(
+            instance.product).data
+        response['total_commission'] = '' if instance.total_commission == "" or instance.total_commission == None else instance.total_commission
+        return response
 
 
 class SaleSerializer(serializers.ModelSerializer):
@@ -80,3 +88,12 @@ class SaleSerializer(serializers.ModelSerializer):
         sale.saleproduct_set.exclude(id__in=products_list_id).delete()
 
         return sale
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['customer'] = '' if instance.customer == "" or instance.customer == None else {
+            "id": instance.customer.id, "name": instance.customer.name}
+        response['seller'] = '' if instance.seller == "" or instance.seller == None else {
+            "id": instance.seller.id, "name": instance.seller.name}
+        response['total_commission'] = '' if instance.total_commission == "" or instance.total_commission == None else instance.total_commission
+        return response
