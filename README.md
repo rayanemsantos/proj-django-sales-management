@@ -55,3 +55,4 @@ $ python manage.py test app
 ## Próximos passos
 
 - Implementar autenticação via API para que vendedores consigam registrar as vendas e acompanhar suas comissões.
+- Implementar consulta e leitura de XML Nfe
