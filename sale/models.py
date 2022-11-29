@@ -1,4 +1,5 @@
 import pytz
+import random
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -31,6 +32,8 @@ class Sale(models.Model):
     def save(self, *args, **kwargs):
         if not self.register_datetime:
             self.register_datetime = timezone.now().astimezone(local_timezone)
+
+        self.set_access_key()
         return super(Sale, self).save(*args, **kwargs)
 
     class Meta:
@@ -42,6 +45,11 @@ class Sale(models.Model):
         for item in self.saleproduct_set.all():
             total += item.total
         self.total = total
+
+    def set_access_key(self):
+        n = 44
+        self.access_key = ''.join(["{}".format(random.randint(0, 9))
+                                  for num in range(0, n)])
 
     @property
     def total_commission(self):
