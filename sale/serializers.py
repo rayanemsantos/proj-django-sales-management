@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.serializers import as_serializer_error
 from sale.models import Sale, SaleProduct
 from product.serializers import ProductSerializer
 
