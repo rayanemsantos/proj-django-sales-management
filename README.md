@@ -8,7 +8,7 @@
 
 ## Instalação
 
-Passo a passo para rodar o projeto local
+Passo a passo para instalar e rodar o projeto local
 
 $ python3 -m venv /path/to/new/virtual/environment
 
@@ -22,7 +22,7 @@ $ python manage.py migrate
 
 $ python manage.py createsuperuser
 
-$ python manage.py runserver
+$ python manage.py runserver 0.0.0.0:8000
 
 Pronto. Agora você pode acessar seu localhost/admin e logar com as credenciais criadas.
 
