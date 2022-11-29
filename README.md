@@ -28,6 +28,8 @@ Pronto. Agora você pode acessar seu localhost/admin e logar com as credenciais 
 
 ## Tela
 
+![1](https://raw.githubusercontent.com/rayanemsantos/proj-django-sales-management/screenshot.png)
+
 ## Funcionalidades
 
 Via Django Admin
