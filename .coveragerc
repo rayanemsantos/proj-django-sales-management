@@ -1,0 +1,11 @@
+[coverage:run]
+omit =
+    */__init__.py
+    */admin.py
+    */urls.py
+    */serializers.py
+    */apps.py
+    */migrations/*
+    *settings.py
+    */tests/*
+    *manage.py
