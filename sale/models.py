@@ -47,9 +47,10 @@ class Sale(models.Model):
         self.total = total
 
     def set_access_key(self):
-        n = 44
-        self.access_key = ''.join(["{}".format(random.randint(0, 9))
-                                  for num in range(0, n)])
+        if not self.access_key:
+            n = 44
+            self.access_key = ''.join(["{}".format(random.randint(0, 9))
+                                       for num in range(0, n)])
 
     @property
     def total_commission(self):
