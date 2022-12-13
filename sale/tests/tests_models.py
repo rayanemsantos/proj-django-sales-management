@@ -1,3 +1,4 @@
+import datetime
 from django.test import TestCase
 from sale.models import Sale, SaleProduct
 from product.models import Product
@@ -22,20 +23,38 @@ class SetupData:
             customer=Customer.objects.first(),
         )
 
-        self.sale = Sale.objects.create(
-            access_key='35210822910629000101550090004001241944828331',
-            seller=Seller.objects.first(),
-            customer=Customer.objects.first()
-        )
-
     def create_sale_product(self):
         product_setup = ProductSetupData()
-        product_setup.create_product()
+        sale = Sale.objects.first()
+        day_week_today = datetime.datetime.today().weekday() + 1
 
-        self.sale_product = SaleProduct.objects.create(
-            sale=Sale.objects.first(),
-            product=Product.objects.first(),
+        # product 1
+        product_with_schedule = product_setup.create_product()
+        product_setup.create_product_commission_schedule(product=product_with_schedule, day_week=day_week_today)
+
+        # product 2
+        product_without_schedule = product_setup.create_product(2, 'SSD 1TB', 1190.99, 10)
+
+        # product 3
+        product_with_schedule_2 = product_setup.create_product(3, 'SSD 500GB', 990.99, 2)
+        product_setup.create_product_commission_schedule(product=product_with_schedule_2, day_week=day_week_today + 1)
+
+        self.saleproduct_1 = SaleProduct.objects.create(
+            sale=sale,
+            product=product_with_schedule,
             quantity=2
+        )
+
+        self.saleproduct_2 = SaleProduct.objects.create(
+            sale=sale,
+            product=product_without_schedule,
+            quantity=3
+        )
+
+        self.saleproduct_3 = SaleProduct.objects.create(
+            sale=sale,
+            product=product_with_schedule_2,
+            quantity=3
         )
 
 
@@ -44,6 +63,7 @@ class SaleTestCase(TestCase):
 
     def setUp(self):
         self.start.create_sale()
+        self.start.create_sale_product()
 
     def test_get(self):
         sale = Sale.objects.first()
@@ -55,6 +75,13 @@ class SaleTestCase(TestCase):
         sale.save()
         self.assertEqual(
             sale.access_key, '35210822910629000101550090004001241944828632')
+
+    def test_change_total_after_delete_sale_product(self):
+        sale = Sale.objects.first()
+        previous_total = sale.total
+        sale.saleproduct_set.last().delete()
+        current_total = sale.total
+        self.assertTrue(previous_total > current_total)
 
     def test_str(self):
         sale = Sale.objects.first()
@@ -85,6 +112,27 @@ class SaleProductTestCase(TestCase):
         sale_product.save()
         self.assertEqual(
             sale_product.quantity, 3)
+
+    def test_change_total_after_alter_quantity(self):
+        sale_product = SaleProduct.objects.first()
+        sale_product.quantity = 4
+        previous_total = sale_product.total
+        sale_product.save()
+        current_total = sale_product.total
+
+        self.assertTrue(previous_total != current_total)
+
+    def test_commission_applied_without_schedule(self):
+        saleproduct = self.start.saleproduct_2
+        self.assertEqual(saleproduct.commission_applied, 10)
+
+    def test_commission_applied_with_schedule(self):
+        saleproduct = self.start.saleproduct_1
+        self.assertEqual(saleproduct.commission_applied, 8)
+
+    def test_commission_applied_with_schedule_not_valid_for_today(self):
+        saleproduct = self.start.saleproduct_3
+        self.assertEqual(saleproduct.commission_applied, 2)
 
     def test_str(self):
         sale_product = SaleProduct.objects.first()
