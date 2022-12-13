@@ -1,3 +1,4 @@
+import datetime
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
@@ -5,20 +6,22 @@ from product.models import Product, ProductCommissionSchedule
 
 
 class SetupData:
-    def create_product(self):
-        self.product = Product.objects.create(
-            code=1,
-            description='Mouse Logitech',
-            unit_price=59.99,
-            commission_percentage=10,
-        )
 
-    def create_product_commission_schedule(self):
-        self.commission_schedule = ProductCommissionSchedule.objects.create(
-            product=Product.objects.first(),
-            day_week=1,
-            min_percentage=3,
-            max_percentage=8
+    def create_product(self, code=1, description='Mouse Logitech', unit_price=59.99, commission_percentage=10):
+        product = Product.objects.create(
+            code=code,
+            description=description,
+            unit_price=unit_price,
+            commission_percentage=commission_percentage,
+        )
+        return product
+
+    def create_product_commission_schedule(self, product, day_week=1, min_percentage=3, max_percentage=8):
+        ProductCommissionSchedule.objects.create(
+            product=product,
+            day_week=day_week,
+            min_percentage=min_percentage,
+            max_percentage=max_percentage
         )
 
 
@@ -60,8 +63,8 @@ class ProductCommissionScheduleTestCase(TestCase):
     start = SetupData()
 
     def setUp(self):
-        self.start.create_product()
-        self.start.create_product_commission_schedule()
+        product = self.start.create_product()
+        self.start.create_product_commission_schedule(product=product)
 
     def test_commission_validation(self):
         commission_schedule = ProductCommissionSchedule.objects.first()
