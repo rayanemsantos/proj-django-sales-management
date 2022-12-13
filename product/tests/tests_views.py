@@ -29,9 +29,22 @@ class ProductViewSetTestCase(TestCase):
         self.assertTrue(status.is_success(response.status_code))
         self.assertTrue("id" in content)
 
+    def test_fail_code_already_used(self):
+        product = Product.objects.first()
+        payload = {
+            'code': product.code,
+            'description': 'Mouse Logitech',
+            'unit_price': 59.99,
+            'commission_percentage': 10
+        }
+        response = self.client.post(
+            self.base_route + '/', data=payload, follow=True, format="json")
+
+        self.assertFalse(status.is_success(response.status_code))
+
     def test_post(self):
         payload = {
-            'code': 2,
+            'code': 3,
             'description': 'Mouse Logitech',
             'unit_price': 59.99,
             'commission_percentage': 10
@@ -45,10 +58,10 @@ class ProductViewSetTestCase(TestCase):
     def test_put(self):
         product = Product.objects.first()
         payload = {
-            'code': 1,
+            'code': product.code,
             'description': 'Mouse Logitech v2',
-            'unit_price': 59.99,
-            'commission_percentage': 10
+            'unit_price': product.unit_price,
+            'commission_percentage': product.commission_percentage
         }
 
         response = self.client.put(
