@@ -9,7 +9,7 @@ from sale.serializers import SaleSerializer
 
 
 class SaleViewSet(viewsets.ModelViewSet):
-    queryset = Sale.objects.all()
+    queryset = Sale.objects.all().order_by('-register_datetime')
     serializer_class = SaleSerializer
 
 
